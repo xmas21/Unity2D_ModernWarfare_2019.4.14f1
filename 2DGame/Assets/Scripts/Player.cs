@@ -47,24 +47,38 @@ public class Player : MonoBehaviour
         Jump();
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "敵人子彈" || collision.gameObject.tag == "死亡區域")
+        {
+            Dead(collision.gameObject.tag);
+        }
+    }
 
     /// <summary>
     /// 移動
     /// </summary>
     private void Move()
     {
+        // 水平浮點數 = 輸入 的 取得軸向("水平") - 左右AD
         float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        // 剛體 的 加速度 = 新 二維向量(水平浮點數 * 速度，剛體的加速度的Y)
         rig.velocity = new Vector2(h * speed, rig.velocity.y);
+        // 動畫 的 設定布林值(參數名稱，水平 不等於 零時勾選)
+        // != 不等於，傳回布林值
         ani.SetBool("跑步開關", h != 0);
 
+        // KeyCode 列舉(下拉式選單) - 所有輸入的項目 滑鼠、鍵盤、搖桿
         if (Input.GetKeyDown(KeyCode.D))
         {
-            transform.eulerAngles = new Vector2(0, 0);
+            // transform 此物件的變形元件
+            // eulerAngles 歐拉角度 0 - 180 - 270 - 360...
+            transform.eulerAngles = new Vector3(0, 0, 0);
         }
+
         if (Input.GetKeyDown(KeyCode.A))
         {
-            transform.eulerAngles = new Vector2(0, 180);
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
 
     }
@@ -107,6 +121,9 @@ public class Player : MonoBehaviour
         // 讓子彈飛
     }
 
+    /// <summary>
+    /// 復活
+    /// </summary>
     private void Replay()
     {
         SceneManager.LoadScene("關卡 1");
@@ -118,21 +135,23 @@ public class Player : MonoBehaviour
     /// <param name="obj">碰到的物件</param>
     private void Dead(string obj)
     {
-        if (obj == "死亡區域")
+        // 或者 ||
+        // 如果 物件名稱 等於 死亡區域 或者 物件名稱 等於 敵人子彈
+        // 等於 ==
+        if (obj == "死亡區域" || obj == "敵人子彈")
         {
-            enabled = false;
+            //this.enabled = false;
+            enabled = false;                    // 此腳本 關閉
             ani.SetBool("死亡開關", true);
-            Invoke("Replay", 3f);
+
+            // 延遲呼叫("方法名稱"，延遲時間)
+            Invoke("Replay", 2.5f);
         }
-
-        // 延遲呼叫("方法名稱"，延遲時間)
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Dead(collision.gameObject.name);
-    }
-
+    /// <summary>
+    /// 畫圈圈
+    /// </summary>
     private void OnDrawGizmos()
     {
         // 圖示 顏色
@@ -140,5 +159,5 @@ public class Player : MonoBehaviour
         // 圖示 繪製球體(中心點，半徑)
         Gizmos.DrawSphere(new Vector2(transform.position.x, transform.position.y) + offset, radius);
     }
-    
+
 }

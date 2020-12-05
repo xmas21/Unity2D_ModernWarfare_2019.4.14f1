@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 736130761595107024}
   - component: {fileID: -1122355949402473347}
   - component: {fileID: -8027835002536893753}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: "\u5B50\u5F48"
-  m_TagString: Untagged
+  m_TagString: "\u5B50\u5F48"
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4775,7 +4775,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!58 &-8027835002536893753
 CircleCollider2D:
