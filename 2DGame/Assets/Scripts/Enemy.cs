@@ -36,7 +36,6 @@ public class Enemy : MonoBehaviour
     {
         player = GameObject.Find("玩家").transform;
 
-
         aud = GetComponent<AudioSource>();
         rig = GetComponent<Rigidbody2D>();
         ani = GetComponent<Animator>();

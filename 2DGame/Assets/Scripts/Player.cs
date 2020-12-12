@@ -31,6 +31,8 @@ public class Player : MonoBehaviour
     private AudioSource aud;
     private Rigidbody2D rig;
     private Animator ani;
+    private GameManeger gm;
+
     #endregion
 
     private void Awake()
@@ -38,6 +40,8 @@ public class Player : MonoBehaviour
         rig = GetComponent<Rigidbody2D>();
         ani = GetComponent<Animator>();
         aud = GetComponent<AudioSource>();
+
+        gm = FindObjectOfType<GameManeger>();
     }
 
     private void Update()
