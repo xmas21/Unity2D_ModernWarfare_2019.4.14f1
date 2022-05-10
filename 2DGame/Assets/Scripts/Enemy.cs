@@ -21,30 +21,31 @@ public class Enemy : MonoBehaviour
     [Header("攻擊範圍")]
     public float rangeAttack;
 
+    public GameObject player;
     private AudioSource aud;
     private Rigidbody2D rig;
     private Animator ani;
-    public Transform player;
     private float timer;
 
-    private void Update()
+    void FixedUpdate()
     {
         Move();
     }
 
-    private void Start()
+    void Start()
     {
-        player = GameObject.Find("玩家").transform;
+        player = GameObject.Find("玩家");
 
         aud = GetComponent<AudioSource>();
         rig = GetComponent<Rigidbody2D>();
         ani = GetComponent<Animator>();
-        OnDrawGizmos();
+
+        OnDrawGizmosSelected();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag=="子彈")
+        if (collision.tag == "子彈")
         {
             Dead();
         }
@@ -53,10 +54,10 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// 移動
     /// </summary>
-    private void Move()
+    void Move()
     {
         // 面向玩家：如果玩家的 X 大於 敵人的 X 角度 0，否則 角度 180
-        if (player.position.x > transform.position.x)
+        if (player.transform.position.x < transform.position.x)
         {
             transform.eulerAngles = Vector3.zero;
         }
@@ -66,7 +67,7 @@ public class Enemy : MonoBehaviour
         }
 
         // 距離 = 三維 的 距離(A點，B點)
-        float dis = Vector3.Distance(player.position, transform.position);
+        float dis = Vector2.Distance(player.transform.position, transform.position);
 
         // 如果 距離 < 攻擊：攻擊
         if (dis < rangeAttack)
@@ -76,7 +77,7 @@ public class Enemy : MonoBehaviour
         // 否則 距離 < 追蹤：追蹤
         else if (dis < rangeTrack)
         {
-            rig.velocity = transform.right * speed;
+            rig.velocity = transform.right * -speed * Time.deltaTime * 60f;
             rig.velocity = new Vector2(rig.velocity.x, rig.velocity.y);
         }
     }
@@ -84,9 +85,9 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// 開槍
     /// </summary>
-    private void Fire()
+    void Fire()
     {
-        rig.velocity = new Vector2(0, rig.velocity.y);                                                      // 加速度 = X 0，Y 原本的 Y
+        rig.velocity = new Vector2(0, -8);                                                      // 加速度 = X 0，Y 原本的 Y
 
         // 如果 計時器 大於等於 間隔 就攻擊
         if (timer >= intervalAttack)
@@ -94,19 +95,18 @@ public class Enemy : MonoBehaviour
             timer = 0;
             aud.PlayOneShot(SoundFIre, Random.Range(0.3f, 0.5f));                                               // 播放音效
             GameObject temp = Instantiate(bullet, point.position, point.rotation);                              // 生成子彈
-            temp.GetComponent<Rigidbody2D>().AddForce(transform.right * BulletSpeed + transform.up * 100);      // 子彈賦予推力
+            temp.GetComponent<Rigidbody2D>().AddForce(transform.right * -BulletSpeed);     // 子彈賦予推力
         }
         else
         {
             timer += Time.deltaTime;            // 累加時間
         }
-        GetComponent<Rigidbody2D>().AddForce(transform.right * BulletSpeed + transform.up * 100);      // 子彈賦予推力
     }
 
     /// <summary>
     /// 死亡
     /// </summary>
-    private void Dead()
+    void Dead()
     {
         enabled = false;
         ani.SetBool("死亡開關", true);
@@ -118,14 +118,14 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// 畫圈
     /// </summary>
-    private void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
         // 圖示 顏色
-        Gizmos.color = new Color(0.5f, 0.5f, 0, 0.5f);
+        Gizmos.color = new Color(0.5f, 0.5f, 0, 0.3f);
         // 圖示 繪製球體(中心點，半徑)
         Gizmos.DrawSphere(new Vector2(transform.position.x, transform.position.y), rangeAttack);
 
-        Gizmos.color = new Color(0, 0.5f, 0.5f, 0.5f);
+        Gizmos.color = new Color(0, 0.5f, 0.5f, 0.3f);
         // 圖示 繪製球體(中心點，半徑)
         Gizmos.DrawSphere(new Vector2(transform.position.x, transform.position.y), rangeTrack);
     }

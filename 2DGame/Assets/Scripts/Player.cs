@@ -25,13 +25,11 @@ public class Player : MonoBehaviour
     [Header("檢查地面半徑")]
     public float radius = 0.3f;
 
-
-
     private int score = 0;
     private AudioSource aud;
     private Rigidbody2D rig;
     private Animator ani;
-    private GameManeger gm;
+    private GameManager gm;
 
     #endregion
 
@@ -41,7 +39,7 @@ public class Player : MonoBehaviour
         ani = GetComponent<Animator>();
         aud = GetComponent<AudioSource>();
 
-        gm = FindObjectOfType<GameManeger>();
+        gm = FindObjectOfType<GameManager>();
     }
 
     private void Update()
@@ -53,7 +51,15 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "敵人子彈" || collision.gameObject.tag == "死亡區域")
+        if (collision.gameObject.tag == "死亡區域")
+        {
+            Dead(collision.gameObject.tag);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "敵人子彈")
         {
             Dead(collision.gameObject.tag);
         }
@@ -149,7 +155,7 @@ public class Player : MonoBehaviour
             ani.SetBool("死亡開關", true);
 
             // 延遲呼叫("方法名稱"，延遲時間)
-            Invoke("Replay", 2.5f);
+            Invoke("Replay", 2f);
         }
     }
 
@@ -163,5 +169,4 @@ public class Player : MonoBehaviour
         // 圖示 繪製球體(中心點，半徑)
         Gizmos.DrawSphere(new Vector2(transform.position.x, transform.position.y) + offset, radius);
     }
-
 }
